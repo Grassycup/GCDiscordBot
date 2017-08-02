@@ -1,7 +1,7 @@
 # gc_discord_bot
 Fancy Discord Bot
 
-Requires:https://github.com/Grassycup/gc_discord_bot
+Requires:
 
 Nervana DeepSpeech: https://github.com/NervanaSystems/deepspeech
 
