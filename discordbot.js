@@ -167,7 +167,8 @@ function generateOutputFile(channel, member) {
 const { exec } = require('child_process');
 // convert audio files to flac audio 16khz sample rate 16bit mono channel
 function convertAudio(input, channel, user) {
-  exec('ffmpeg -f s32le -i ' + input + ' -sample_fmt s16 -ar 16k -ac 1 -c:a flac ' + input + '.flac', (err, stdout, stderr) => {
+  //exec('ffmpeg -f s32le -i ' + input + ' -sample_fmt s16 -ar 16k -ac 1 -c:a flac ' + input + '.flac', (err, stdout, stderr) => {
+  exec('ffmpeg -f s32le -i ' + input + ' -acodec pcm_s16le -ar 8000 -ac 1 ' + input + '.wav', (err, stdout, stderr) => {
     if (err) {
       // node couldn't execute the command
       return;
@@ -183,23 +184,24 @@ function convertAudio(input, channel, user) {
 function outputText(p, channel, user) {
   console.log(path);
   var fileName = path.basename(p);
-  exec('cd /mnt/g/trash/neon/neon && . .venv3/bin/activate && cd ./deepspeech/speech && echo "/mnt/c/Users/Cardinality/Documents/GitHub/GCDiscordBot/recordings/' + fileName +'.flac,helloworld.txt" > /mnt/g/trash/neon/neon/deepspeech/speech/csv/' + fileName + '.csv && python evaluate.py --manifest val:./csv/' + fileName + '.csv --model_file librispeech_16_epochs.prm -b cpu && deactivate', (err, stdout, stderr) => {
-    if (err) {
-      // node couldn't execute the command
-      console.log(err);
-      return;
-    }
-    // clean up files after done
-    fs.unlink('/mnt/g/trash/neon/neon/deepspeech/speech/csv/' + fileName + '.csv', function() { console.log('csv removed'); });
-    fs.unlink('/mnt/c/Users/Cardinality/Documents/GitHub/GCDiscordBot/recordings/' + fileName, function() { console.log('pcm removed'); });
-    fs.unlink('/mnt/c/Users/Cardinality/Documents/GitHub/GCDiscordBot/recordings/' + fileName + '.flac', function() { console.log('flac removed'); });
 
-    // // the *entire* stdout and stderr (buffered)
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-    channel.sendMessage(user + ' said ' + stdout);
-    return stdout;
+  exec('kaldi/egs/aspire/s5/predict.sh ../../../../recordings/' + fileName + '.wav', (err, stdout, stderr) => {
+    var myRe = new RegExp('\nutterance-id1.*\n');
+    var result = myRe.exec(stderr);
+    var msg = user + ' said ' + result;
+    msg = msg.replace('utterance-id1', '');
+    fs.unlink('/mnt/c/Users/Cardinality/Documents/GitHub/GCDiscordBot/recordings/' + fileName, function() { console.log('pcm removed'); });
+    fs.unlink('/mnt/c/Users/Cardinality/Documents/GitHub/GCDiscordBot/recordings/' + fileName + '.wav', function() { console.log('wav removed'); });
+    channel.sendMessage(msg);
   });
 }
 
 client.login(process.env.DiscordToken);
+
+// var fileName = '341356270588133377-146052390313787392-1501654600327.pcm.wav';
+// exec('kaldi/egs/aspire/s5/predict.sh ../../../../recordings/341356270588133377-146052390313787392-1501729762261.pcm.wav', (err, stdout, stderr) => {
+//   console.log(stderr);
+//   var myRe = new RegExp('\nutterance-id1.*\n');
+//   var result = myRe.exec(stderr);
+//   console.log(result[0].trim());
+// });
