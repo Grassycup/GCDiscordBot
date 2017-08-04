@@ -178,6 +178,7 @@ client.on('message', message => {
         channel.sendMessage(`
 !help - Get help
 !join VoiceChannelName - Join specified voice channel and transcribe speech
+!leave - Leave the current voice channel
 !ping - Pong
           `);
         break;
