@@ -174,11 +174,16 @@ client.on('message', message => {
           curVoiceChannel.leave();
         curVoiceChannel = null;
         break;
+      case '!echo':
+        // ignore the command but send the rest of the command back as echo
+        channel.sendMessage(command.splice(1).join(' '));
+        break;
       case '!help':
         channel.sendMessage(`
 !help - Get help
 !join VoiceChannelName - Join specified voice channel and transcribe speech
 !leave - Leave the current voice channel
+!echo Message - Echo out user message
 !ping - Pong
           `);
         break;
