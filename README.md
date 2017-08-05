@@ -1,7 +1,10 @@
 Grassycup Discord Bot
 ===================
 Fancy Discord Bot
-Has the ability to join a discord chat channel and convert voice to text
+
+Has the ability to join a discord voice channel and convert speech to text.
+
+
 > **Commands**:
 > - !help - Get help
 > - !join VoiceChannelName - Join specified voice channel and transcribe speech
